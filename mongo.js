@@ -50,13 +50,13 @@ MongoClient.connect(url, function(err, db){
                   <tbody>';
                 docs.forEach(function(doc){
                     var tr_id="<tr><td>"+doc._id+"</td>";
-                    var tr_nombre="<td>"+doc.nom+"</td>";
+                    var tr_nombre="<td>"+doc.nombre+"</td>";
                     var tr_categoria="<td>"+doc.categoria+"</td>";
                     var tr_año="<td>"+doc.añosalida+"</td>";
 
                     id_juego = doc._id;
 
-                    btnEditar = "<td><a class='btn btn-link' href=http://localhost:3000/editar/"+id_juego+">Editar</a></td>";
+                    btnEditar = "<td><a class='btn btn-link' href=http://localhost:3000/modificar/"+id_juego+">Editar</a></td>";
                     btnBorrar = "<td><a class='btn btn-link' href=http://localhost:3000/eliminar/"+id_juego+">Eliminar</a></td>";
                     
                     var cierre_tr="</tr>";
@@ -126,7 +126,7 @@ MongoClient.connect(url, function(err, db){
         if (err) throw err;
         var dbo = db.db("videojuegos");
 
-        var myobj = { nombre: inputNombre, categoria: inputCategoria, añoLanzamiento: inputAño};
+        var myobj = { nombre: inputNombre, categoria: inputCategoria, añosalida: inputAño};
         dbo.collection("Juegos").insertOne(myobj, function(err, res) {
             if (err) throw err;
             console.log("Nuevo Juego insertado");
@@ -156,6 +156,72 @@ MongoClient.connect(url, function(err, db){
         });
 
     });
+
+
+app.get('/modificar/:id',function(req,res){
+    var idJuego = req.params.id;
+     MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("videojuegos");
+        dbo.collection('Juegos').findOne({_id: new ObjectID(idJuego)},function(err, docs){
+
+
+             var modificar = '<form method="POST" action="http://localhost:3000/modificar/'+[idJuego]+'">\
+            <label for="nombre">Nombre del Juego</label>\
+            <input class="form-control" type="text" name="nombre" value="'+docs["nombre"]+'">\
+            <br>\
+            <label for="duracion">Categoria</label>\
+            <input class="form-control" type="text" name="categoria" value="'+docs["categoria"]+'">\
+            <br>\
+            <label for="descripcion">Año de salida</label>\
+            <input class="form-control" type="text" name="año" value="'+docs["añosalida"]+'">\
+            <br>\
+            <input type="submit">\
+            </form>';
+
+             fs.readFile("head.html","utf8",(err,data)=>{
+                if(err){
+                    console.log(err);
+                    return err;
+                }else{
+                    res.send(data+modificar);
+                }
+            })
+
+
+        });
+    });
+
+});
+
+
+
+
+app.post('/modificar/:id',urlencodedParser,function(req,res){
+    var idJuego = req.params.id;
+
+    var inputNombre = req.body.nombre;
+    var inputCategoria = req.body.categoria;
+    var inputAño = req.body.año;
+
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+            var dbo = db.db("videojuegos");
+        var jsquery = {_id: new ObjectID(idJuego)};
+            var newvalues = { $set: { nombre: inputNombre, categoria: inputCategoria, añosalida: inputAño} };
+            dbo.collection('Juegos').updateOne(jsquery, newvalues, function(err, result){
+
+                console.log("Nuevo Elemento Modificado");
+                res.redirect("/");
+    
+            }); 
+        
+        });
+
+});
+
+
+
 
 
 
