@@ -40,16 +40,18 @@ MongoClient.connect(url, function(err, db){
                 var lista="";
                 var inicio_tabla='<table class="table">\
                 <thead>\
-                <tr>\
+                <tr collsp class="bg-primary" >\
                 <th scope="col">ID</th>\
                       <th scope="col">Nombre</th>\
                       <th scope="col">categoria</th>\
                       <th scope="col">Año de salida</th>\
+                      <th scope="col"></th>\
+                      <th scope="col"></th>\
                     </tr>\
                   </thead>\
                   <tbody>';
                 docs.forEach(function(doc){
-                    var tr_id="<tr><td>"+doc._id+"</td>";
+                    var tr_id="<tr class='table-primary' ><td>"+doc._id+"</td>";
                     var tr_nombre="<td>"+doc.nombre+"</td>";
                     var tr_categoria="<td>"+doc.categoria+"</td>";
                     var tr_año="<td>"+doc.añosalida+"</td>";
@@ -65,7 +67,7 @@ MongoClient.connect(url, function(err, db){
                 });
                 var cierre_tabla = '</tbody>\
                             </table>';
-                var botonCrear = '<a  class="btn btn-primary"  href="http://localhost:3000/insertar" >Crear<a/>';
+                var botonCrear = '<a class="btn btn-primary" href="http://localhost:3000/insertar" >Crear<a/>';
                 var tablaFinal = inicio_tabla+lista+cierre_tabla+botonCrear;
                 fs.readFile("head.html","utf8",(err,data)=>{
                 if(err){
@@ -100,7 +102,7 @@ MongoClient.connect(url, function(err, db){
         <label for="descripcion">Año de salida</label>\
         <input class="form-control" type="text" name="año">\
         <br>\
-        <input type="submit" value="Añadir">\
+        <input  value="Enviar" type="submit" value="Añadir">\
     </form>';
 
     fs.readFile("head.html","utf8",(err,data)=>{
